@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+
+    <title>@ViewData["Title"] - Sipariş Uygulama</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="~/template/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/template/css/style.css" rel="stylesheet" />
+    <link href="~/template/css/responsive.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="~/template/css/jquery.mcustomscrollbar.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <style> 
+        .navbar-brand {
+            float: left; /* Logoyu sola hizalar */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header_section">
+            <div class="container">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" asp-area="Left" asp-controller="Restaurant" asp-action="Index"><img src="~/template/images/logo.png" alt="Logo" /></a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    @* <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Sipariş Uygulama</a> *@
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="RestaurantFood" asp-action="Index"><span class="padding5"><i class="fa fa-angle-right"></i></span>Ana Sayfa</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="RestaurantFood" asp-action="RestaurantsFoods"><span class="padding5"><i class="fa fa-angle-right"></i></span> Yemekler</a>
+                            </li>
+                            <li class="nav-item">
+                                <a id="aCartCount" class="nav-link" asp-area="" asp-controller="Cart" asp-action="Index"><span class="padding5"><i class="fa fa-angle-right"></i></span>Sepet</a>
+                            </li>
+                            @if (User.Identity.IsAuthenticated == true)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Logout"><span class="padding5"><i class="fa fa-angle-right"></i></span>Çıkış Yap</a>
+                                </li>
+                            }
+
+                        </ul>
+                        @if (User.Identity.IsAuthenticated == false)
+                        {
+                            <form class="form-inline my-2 my-lg-0">
+                                <div class="login_bt">
+                                    <ul>
+                                        <li><a href="@Url.Action("Login","Account")" id="loginId">Login</a></li>
+                                        <li><a href="@Url.Action("Login","Account")"><i class="fa fa-user" aria-hidden="true"></i></a></li>
+                                       
+                                       
+                                    </ul>
+                                </div>
+                            </form>
+                            <form class="form-inline my-2 my-lg-0">
+                                <div class="login_bt">
+                                    <ul>
+                                        <li><a href="@Url.Action("Signup","Account")">Kayıt Ol</a></li>
+                                    </ul>
+                                </div>
+                            </form>
+                        }
+                        else
+                        {
+                            <form class="form-inline my-2 my-lg-0">
+                                <div class="login_bt">
+                                    <ul>
+                                        <li><a href="@Url.Action("Login","Account")">@User.Claims.FirstOrDefault(x => x.Type == "UserFullName")?.Value</a></li>
+                                        <li><a href="@Url.Action("Login","Account")"><i class="fa fa-user" aria-hidden="true"></i></a></li>
+                                    </ul>
+                                </div>
+                            </form>
+                        }
+                      
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2023 - SiparisUygulama.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/template/js/jquery.min.js"></script>
+    <script src="~/template/js/popper.min.js"></script>
+    <script src="~/template/js/bootstrap.bundle.min.js"></script>
+    <script src="~/template/js/jquery-3.0.0.min.js"></script>
+    <script src="~/template/js/plugin.js"></script>
+
+    <script src="~/template/js/jquery.mcustomscrollbar.concat.min.js"></script>
+    @* <script src="~/template/js/custom.js"></script> *@
+    <script>
+        $(document).ready(function () {
+
+        @if (User.IsInRole("Customer"))
+        {
+            @:updateCartCount();
+        }
+                        });
+
+        function updateCartCount() {
+            $.ajax({
+                url: '/Cart/UpdateCartCount/',
+                type: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    $("#aCartCount").html("<span class='padding5'><i class='fa fa-angle-right'></i></span> Sepet(" + data + ")");
+                }
+            });
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+
+
+
+
+
+

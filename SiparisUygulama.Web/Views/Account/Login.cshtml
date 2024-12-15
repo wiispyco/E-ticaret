@@ -1,0 +1,116 @@
+﻿@model SiparisUygulama.Web.Models.Login.LoginViewModel
+@{
+    ViewData["Title"] = "Sipari Uygulaması Giriş";
+    Layout = "~/Views/Shared/_LayoutNoAuthorize.cshtml";
+}
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- mobile metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+
+
+
+    <link href="~/template/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/template/css/style.css" rel="stylesheet" />
+    <link href="~/template/css/responsive.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="images/fevicon.png" type="image/gif" />
+    <link href="~/template/css/jquery.mcustomscrollbar.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+    <div class="header_section header_bg">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="@Url.Action("Index", "RestaurantFood")"><img src="~/template/images/logo.png" /></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>
+        </div>
+    </div>
+</body>
+
+<div class="container-fluid">
+    <div class="contact_section_2">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="mail_section_1">
+                    <form action="@Url.Action("Login", "Account")" method="post">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <!-- Giriş Bilgileri -->
+                        <div class="form-outline mb-4">
+                            <input type="email" id="username" class="mail_text" placeholder="Email" asp-for="Mail">
+                            @Html.ValidationMessageFor(m => m.Mail, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-outline mb-4">
+                            <input type="password" id="password" class="mail_text" placeholder="Şifre" asp-for="Password">
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="container">
+                            <div class="row">
+                                <!-- reCAPTCHA -->
+                                <div class="g-recaptcha" data-sitekey="6LcxriUqAAAAABeFTKC3E-If7so9ED7RqIfTCjmK"></div>
+                                <!-- Giriş Yap -->
+                                <div class="send_bt mt-4 ">
+                                    <button type="submit" class="btn btn-danger btn-block mb-4">Giriş Yap</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/template/js/jquery.min.js"></script>
+<script src="~/template/js/popper.min.js"></script>
+<script src="~/template/js/bootstrap.bundle.min.js"></script>
+<script src="~/template/js/jquery-3.0.0.min.js"></script>
+<script src="~/template/js/plugin.js"></script>
+
+<script src="~/template/js/jquery.mcustomscrollbar.concat.min.js"></script>
+<script src="~/template/js/custom.js"></script>
+@* <div class="header_section header_bg">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="index.html"><img src="~/template/images/logo.png" /></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <h2>Sipariş  Uygulama Giriş Ekranı</h2>
+
+                <form action="@Url.Action("Login","Account")" method="post">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <!-- Email input -->
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="username">Mail</label>
+                        <input type="email" id="username" class="form-control" placeholder="Email" asp-for="Mail" value="">
+                        @Html.ValidationMessageFor(m => m.Mail, "", new { @class = "text-danger" })
+                    </div>
+
+                    <!-- Password input -->
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="password">Şifre</label>
+                        <input type="password" id="password" class="form-control" placeholder="Şifre" asp-for="Password" value="">
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+
+
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-danger btn-block mb-4">Giriş Yap</button>
+                </form>
+            </div>
+        </nav>
+    </div>
+</div> *@

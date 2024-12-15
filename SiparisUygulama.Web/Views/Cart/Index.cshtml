@@ -1,0 +1,147 @@
+﻿@model SiparisUygulama.Contract.DataContract.Model.CartSummaryModel
+@{
+    ViewData["Title"] = "Sepet";
+    Layout = "_LayoutTemplate";
+}
+<div class="card w-100">
+    <div class="banner_section layout_padding p-0">
+        <div class="container">
+            <div class="text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Sepet</h5>
+                    <table class="table">
+
+                        <tr>
+                            <th scope="col">Toplam Ürün Miktarı</th>
+                            <th scope="col">Toplam Fiyat</th>
+
+                        </tr>
+                        <tr>
+                            <td id="product">@Model.Details.Sum(d => d.Quantity)</td>
+                            <td id="totalPrice">@Model.Details.Sum(d => d.Total)</td>
+                        </tr>
+
+
+                    </table>
+                    <table id="forDataTable" class="table">
+                        <thead>
+                            <tr>
+                                <td>Ürün Adı</td>
+                                <td>Ürün Miktarı</td>
+                                <td>Birim Fiyat</td>
+                                <td>Toplam</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Details)
+                            {
+                                <tr id="row_@item.Id">
+                                    <td>@item.FoodName</td>
+                                    <td>
+                                        <input type="number" id="quantity_@item.Id" value="@item.Quantity" min="0" onchange="updateQuantity(@item.Id)" />
+                                    </td>
+                                    <td id ="price_@item.Id">@item.FoodPrice</td>
+                                    <td id="total_@item.Id">@item.Total</td>
+                                </tr>
+
+                            }
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-md-12 text-right mt-3">
+                            <button class="btn btn-danger" type="button" onclick="siparisiOnayla();">Siparişi Onayla</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*  <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-12 bg-danger" style="height:50px"></div>
+        <div class="col-lg-3 col-md-6 col-sm-12 bg-success" style="height:50px"></div>
+        <div class="col-lg-3 col-md-6 col-sm-12 bg-dark" style="height:50px"></div>
+        <div class="col-lg-3 col-md-6 col-sm-12 bg-info" style="height:50px"></div>
+        </div> *@
+
+
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#forDataTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.1.2/i18n/tr.json',
+                },
+                searching: false,
+                ordering: false,
+                dom: 'lfrtip',
+                // "language": {
+                //     "lengthMenu": "Sayfada  MENU Adet Kayıt Göster",
+                //     "zeroRecords": "kayıt bulunamadı",
+                //     "info": "Gösterilen sayfa PAGE / PAGES",
+                //     "infoEmpty": "Kayıt bulunamadı",
+                //     "infoFiltered": "(MAX adet kayıttan süzülen)",
+                //     "search": "Listede Ara:",
+                //     paginate: {
+                //         first: "İlk",
+                //         previous: "Önceki",
+                //         next: "Sonraki",
+                //         last: "Son"
+                //     }
+
+            });
+        });
+
+        function updateQuantity(id) {
+            var quantity = $("#quantity_" + id).val();
+            
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateQuantity", "Cart")',
+                data: {
+                    id: id,
+                    quantity: quantity,
+                    cartid: @Model.CartId
+                },
+                success: function (response) {
+                    if (response.success) {
+                        console.log('Miktar güncellendi.');
+                        if (quantity == 0) {
+                            $("#row_" + id).remove(); // Eğer miktar 0 ise satırı kaldır
+                        } 
+                        else 
+                        {
+                            location.reload();
+                        }
+                        
+                    }
+                    else 
+                    {
+                        alert('Miktar güncellenirken bir hata oluştu.');
+                    }
+                },
+                error: function () {
+                    alert('Miktar güncellenirken bir hata oluştu.');
+                }
+            });
+        }
+
+        function siparisiOnayla() {
+            $.ajax({
+                url: '/Cart/UpdateCartStatus/',
+                type: 'POST',
+                success: function (data) {
+
+                    alert('Siparişiniz en kısa sürede size ulaşmak için hazırlanmaya başlayacakatır.');
+                }
+            });
+
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" />
+}
+
+

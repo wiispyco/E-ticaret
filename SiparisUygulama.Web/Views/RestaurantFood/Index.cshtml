@@ -1,0 +1,188 @@
+﻿@model MainRestaurantViewModel
+@{
+    ViewData["Title"] = "Restoranlardaki Yemek Listesi";
+    Layout = "_LayoutTemplate";
+}
+
+
+<div class="card w-100">
+    <div class="banner_section layout_padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="banner_img"><img src="~/template/images/banner-img.png" /></div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="banner_img"><img src="~/template/images/banner-img.png" /></div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="banner_img"><img src="~/template/images/banner-img.png" /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <h1 class="banner_taital">Yemek Siparişi</h1>
+                    <p class="banner_text">Dilediğiniz restorandan yemeğinizi seçip hızlı bir şekilde sepetinize ekleyebilirsiniz.</p>
+                    <!-- select box section start -->
+                    <div class="container">
+                        <div class="select_box_section">
+                            <div class="select_box_main">
+                                <div class="row">
+                                    <div class="col-md-4 select-outline">
+                                        <select id="restaurantSelect" class="mdb-select md-form md-outline colorful-select dropdown-primary form-control" asp-items="Model.RestaurantList">
+                                            <option value="">Restoran</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 select-outline">
+                                        <select id="foodSelect" class="mdb-select md-form md-outline colorful-select dropdown-primary form-control">
+                                            <option value="" disabled selected>Yemek</option>
+                                        </select>
+                                    </div>
+                                    <div class=" col-md-4 select-outline">
+                                        <input type="number" id="quantity" class="form-control" max="999" oninput="this.value = this.value.slice(0, 3)" style="width: 100px" placeholder="Miktar">
+                                    </div>
+                                    @*  <input type="text" id="searchInput" class="mdb-select md-form md-outline" placeholder="Yemek ismi ara" /> *@
+                                </div>
+                                <div class="search_btn"><a href="#" onclick="addToCart()">Sepete Ekle</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- select box section end -->
+
+                </div>
+                <div class="col-md-12">
+                    @*  <h5 class="card-title">Restoran Listesi</h5> *@
+                    @*  <input type="text" id="searchInput" placeholder="Yemek ismi ara" /> *@
+                    @*  <button type="button" onclick="searchRestaurantFood()">Yemek Ara</button> *@
+                    <div id="divRestaurantFood"> </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            loadRestaurantFoods();
+
+            $('#restaurantSelect').change(function () {
+                var restaurantId = $(this).val();
+
+                if (restaurantId) {
+                    $.ajax({
+                        url: '/RestaurantFood/GetFoodsByRestaurant',
+                        type: 'GET',
+                        data: { id: restaurantId },
+                        success: function (data) {
+                            $("#foodSelect").empty();
+                            $("#foodSelect").append('<option value="" disabled selected>Food</option>');
+
+                            $.each(data, function (index, item) {
+                                console.log(item.id);
+                                console.log(item.foodName);
+                                $("#foodSelect").append('<option value="' + item.id + '">' + item.foodName + '</option>');
+                            });
+                        }
+                    });
+                }
+                else {
+                    $("#foodSelect").empty();
+                    $("#foodSelect").append('<option value="" disabled selected>Food</option>');
+                }
+            });
+
+        });
+
+        function addToCart() {
+            
+            var foodId = $('#foodSelect').val();
+            var quantity = $('#quantity').val();
+
+            if (!foodId) {
+                alert("Lütfen restoran ve yemek seçiniz.");
+                return;
+            }
+
+            var model = {
+                RestaurantFoodId: foodId,
+                Quantity: quantity
+            };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddProduct", "Cart")',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                data: model ,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        updateCartCount();
+                    } 
+                    else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+
+
+        function loadRestaurantFoods() {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Restaurants", "RestaurantFood")',
+                // data: { searchTerm: searchTerm },
+                success: function (data) {
+                    $("#divRestaurantFood").html("");
+                    $("#divRestaurantFood").append(data);
+                },
+            });
+        }
+
+
+        function validateAndAddProduct(id) {
+            var quantity = $('#quantity_' + id).val();
+
+            if (quantity <= 0) {
+                alert("Miktar 1'den küçük olamaz.");
+            }
+            else {
+                AddProduct(id);
+            }
+        }
+
+        function AddProduct(id) {
+            var formData = $('#form_' + id).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddProduct", "Cart")',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+
+                        alert(response.message);
+                        updateCartCount();
+                    }
+                    else {
+
+                        alert(response.message);
+                    }
+                },
+            });
+        }
+    </script>
+}

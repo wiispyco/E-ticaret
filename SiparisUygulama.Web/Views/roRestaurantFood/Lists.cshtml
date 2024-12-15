@@ -1,0 +1,47 @@
+﻿@using SiparisUygulama.Web.Models.RestaurantFood;
+@model List<RestaurantFoodViewModel>
+
+@{
+    ViewData["Title"] = "Yemekleriniz";
+    Layout = "_Restoran";
+    var errormessage = ViewBag.ErrorMsg?.ToString();
+}
+<div class="text-center">
+    <div class="card-body">
+        <h5 class="card-title">Yemekleriniz</h5>
+        @if (!string.IsNullOrEmpty(errormessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @errormessage
+            </div>
+        }
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">FoodName</th>
+                    <th scope="col">Restoran Adı</th>
+                    <th scope="col">Mevcut mu?</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">#</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.FoodName</td>
+                        <td>@item.Restaurant.RestaurantName</td>
+                        <td>@item.Control</td>
+                        <td>@item.Price</td>
+                        <td>
+                            <a class="btn btn-danger" href="@Url.Action("Delete","roRestaurantFood",new{id=item.Id})">Yemeği Kaldır</a>
+                            <a class="btn btn-dark " href="@Url.Action("AddOrUpdate","roRestaurantFood",new{id=item.Id})">Yemeği Güncelle</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

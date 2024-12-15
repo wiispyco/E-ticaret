@@ -1,0 +1,110 @@
+﻿@model List<RestaurantFoodViewModel>
+@using SiparisUygulama.Contract.DataContract
+
+<div class="blog_section layout_padding">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-12">
+                <h1 id="Name" class="blog_taital">Kafeler & Restoranlar</h1>
+                <p class="blog_text">Lezzetli yemekler sunan çeşitli kafe ve restoranları keşfedin.</p>
+            </div>
+        </div>
+        <div class="blog_section_2">
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-4 mb-5">
+                        <div class="blog_box)">
+                            <div class="blog_img">
+                                @if (!string.IsNullOrEmpty(item.FoodImgFileName))
+                                {
+                                    <img src="~/Files/RestaurantFood/@item.FoodImgFileName" alt="@item.RestaurantName" class="img-fluid mb-4">
+                                }
+                                else
+                                {
+                                    <img src="~/Files/noimage.jpg" alt="@item.RestaurantName" class="img-fluid mb-4">
+                                }
+                                
+                            </div>
+                            <h4  class="burger_text restaurantName">@item.RestaurantName</h4>
+                            @*  <h6 class="date_text">Açılış - Kapanış</h6> *@
+                            @*  <h6 class="time_text">@item.OpeningTime - @item.ClosingTime</h6> *@
+                            <h6 class="time_text">@item.FoodName</h6>
+                            <h6 class="time_text">@item.Price₺</h6>
+                            <div>@ViewBag.RestaurantId</div>
+                            <div>
+                                <form id="form_@item.Id">
+                                    <input type="hidden" value="@item.Id" name="RestaurantId" />
+                                    <input type="hidden" value="@item.FoodName" name="FoodName" />
+                                    <input type="hidden" value="@item.Price" name="RestaurantFoodPrice" />
+                                    <input id="quantity_@item.Id" class="mail_text" type="number" value="" name="Quantity" style="width: 200px;margin-left:70px" placeholder="Miktar" />
+                                    @* <input type="hidden" name="__RequestVerificationToken" value="@Html.AntiForgeryToken()"> *@
+                                    <button type="button" onclick="validateAndAddProduct(@item.Id);" class="btn btn-success" style="margin-left:105px;width: 120px"> Sepete Ekle</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var urlParams = new URLSearchParams(window.location.search);
+        var restaurantName = urlParams.get('restaurantName');
+        if (restaurantName) {
+            $('#Name').text(restaurantName);
+            $('.restaurantName').each(function () {
+                $(this).hide();
+            });
+
+        }
+        else {
+
+        }
+                           
+
+    });
+</script>
+
+@* <table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Restoran İsmi</th>
+            <th scope="col">Restoran Id</th>
+            <th scope="col">Fiyat</th>
+            <th scope="col">Yemek Var Mı?</th>
+            <th scope="col">Yemek İsmi</th>
+            <th scope="col">Açılış Saati</th>
+            <th scope="col">Kapanış Saati</th>
+            <th scope="col">#</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.RestaurantName</td>
+                <td>@item.RestaurantId</td>
+                <td>@item.Price</td>
+                <td>@item.Control</td>
+                <td>@item.FoodName</td>
+                <td>@item.OpeningTime</td>
+                <td>@item.ClosingTime</td>
+
+
+                <td style="width:200px;">
+                    <form id="form_@item.Id">
+                        <input type="hidden" value="@item.Id" name="RestaurantFoodId" />
+                        <input type="hidden" value="@item.Price" name="RestaurantFoodPrice" />
+                        <input id="quantity_@item.Id" type="number" value="" name="Quantity" placeholder="Miktar" />
+                        <button type="button" onclick="validateAndAddProduct(@item.Id);" class="btn btn-success">Sepete Ekle</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> *@

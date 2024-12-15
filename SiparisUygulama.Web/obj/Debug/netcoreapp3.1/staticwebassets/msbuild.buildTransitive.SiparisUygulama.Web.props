@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\SiparisUygulama.Web.props" />
+</Project>

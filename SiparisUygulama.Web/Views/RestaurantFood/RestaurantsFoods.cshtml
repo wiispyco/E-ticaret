@@ -1,0 +1,146 @@
+﻿@{
+    ViewData["Title"] = "Restoranlardaki Yemek Listesi";
+    Layout = "_LayoutTemplate";
+}
+
+
+<div class="card w-100">
+    <div class="banner_section layout_padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="banner_img"><img src="~/template/images/banner-img.png" /></div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="banner_img"><img src="~/template/images/banner-img.png" /></div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="banner_img"><img src="~/template/images/banner-img.png" /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <h1 class="banner_taital">Yemek Siparişi</h1>
+                    <p class="banner_text ml-4">İstediğiniz yemeği arayabilirsiniz.</p>
+                    <!-- select box section start -->
+                    <div class="container">
+                        <div class="col-md-4 select-outline">
+                            <input type="text" id="searchInput" class="mail_text" placeholder="Yemek ismi ara" />
+                        </div>
+                        <div class="send_bt"><a href="#" onclick="searchRestaurantFood()" style="width: 70px;height:50px;margin-top:45px"> Ara</a></div>
+                    </div>
+                    <!-- select box section end -->
+                </div>
+                <div class="col-md-12">
+                    @*  <h5 class="card-title">Restoran Listesi</h5> *@
+                    @*  <input type="text" id="searchInput" placeholder="Yemek ismi ara" /> *@
+                    @*  <button type="button" onclick="searchRestaurantFood()">Yemek Ara</button> *@
+                    <div id="divRestaurantFoods"> </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var restaurantId = '@ViewBag.RestaurantId';
+
+            if (restaurantId != 0) {
+                loadRestaurantFoods(restaurantId);
+            }
+            else {
+                loadRestaurantFoods();
+            }
+
+        });
+
+        function loadRestaurantFoods(restaurantId, searchTerm) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetRestaurantFood", "RestaurantFood")',
+                data: {
+                    restaurantId: restaurantId,
+                    searchTerm: searchTerm
+                },
+                success: function (data) {
+                    $("#divRestaurantFoods").html("");
+                    $("#divRestaurantFoods").append(data);
+                },
+            });
+        }
+
+        function searchRestaurantFood() {
+            var searchTerm = $('#searchInput').val();
+            var restaurantId = '@ViewBag.RestaurantId'; // Mevcut restaurantId'yi alın
+
+            loadRestaurantFoods(restaurantId, searchTerm);
+        }
+
+        function validateAndAddProduct(id) {
+            var quantity = $('#quantity_' + id).val();
+
+            if (quantity <= 0) {
+                alert("Miktar 1'den küçük olamaz.");
+            }
+            else {
+                checkAuthenticationAndAddProduct(id, quantity);
+            }
+        }
+
+        function checkAuthenticationAndAddProduct(id, quantity) {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("IsAuthenticated", "Account")',
+                success: function (isAuthenticated) {
+                    if (isAuthenticated) {
+                        addProduct(id, quantity);
+                    } else {
+                        window.location.href = '@Url.Action("Login", "Account")';
+                    }
+                },
+                error: function () {
+                    alert("Giriş durumu kontrol edilirken bir hata oluştu.");
+                }
+            });
+        }
+
+        function addProduct(id, quantity) {
+            var formData = $('#form_' + id).serialize();
+            var model = {
+                RestaurantFoodId: id,
+                Quantity: quantity
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddProduct", "Cart")',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                data: model,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        updateCartCount();
+                    }
+                    else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert("Ürün sepete eklenirken bir hata oluştu.");
+                }
+            });
+        }
+    </script>
+}

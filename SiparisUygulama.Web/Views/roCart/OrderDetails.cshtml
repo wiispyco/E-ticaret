@@ -1,0 +1,53 @@
+﻿@model List<SiparisUygulama.Contract.DataContract.Model.CartSummaryDetailModel>
+@using SiparisUygulama.Contract.DataContract
+@{
+    ViewData["Title"] = "Siparişler";
+    Layout = "_Restoran";
+}
+<div class="text-center">
+    <div class="card-body">
+        <table id="forDataTable" class="table">
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <table class="table">
+                            <tr>
+
+                                <th colspan="4">Sipariş Detayları</th>
+                            </tr>
+                            <tr>
+                                <td>Yemek</td>
+                                <td>Yemek Fiyatı</td>
+                                <td>Yemek Adedi</td>
+                            </tr>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.FoodName</td>
+                                    <td>@item.FoodPrice</td>
+                                    <td>@item.Quantity</td>
+                                </tr>
+
+                            }
+                        </table>
+                    </td>
+                </tr>
+                <td>
+                <a class="btn btn-primary" type="button" href="">deneme</a>
+                </td>
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#forDataTable').DataTable();
+        });
+    </script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" />
+}
+

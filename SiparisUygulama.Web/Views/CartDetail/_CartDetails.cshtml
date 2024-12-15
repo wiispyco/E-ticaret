@@ -1,0 +1,73 @@
+﻿@model List<CartDetailViewModel>
+
+
+<div class="services_section layout_padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="services_taital">Sepet Detay</h1>
+                <p class="services_text">Sepetinizdeki  ürünler aşağıda listelenmiştir.</p>
+                <div class="nav-tabs-navigation">
+                    <div class="nav-tabs-wrapper">
+                        <ul class="nav" data-tabs="tabs">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="#" data-toggle="tab">Sepet</a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="services_section_2">
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="food_img">
+                            <img src="~/template/images/img-1.png" alt="@item.RestaurantFood.FoodName"><img src="~/template/images/img-1.png" />
+                        </div>
+                        <h3 class="food_text">@item.RestaurantFood.FoodName</h3>
+                        <p class="more_text">Restoran: @item.RestaurantFood.RestaurantName<br>Adet: @item.Quantity<br>Fiyat: @item.Total</p>
+                        <div class="read_bt">
+                            <a class="btn btn-danger" href="#" onclick="deleteCartDetail(@item.Id, @item.CartId)">Ürünü Sil</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Restoran İsmi</th>
+                    <th scope="col">Yemek İsmi</th>
+                    <th scope="col">Sipariş Numarası</th>
+                    <th scope="col">Adet</th>
+                    <th scope="col">Fiyat</th>
+                    <th scope="col">#</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td id="productId">@item.Id</td>
+                        <td>@item.RestaurantFood.RestaurantName</td>
+                        <td>@item.RestaurantFood.FoodName</td>
+                        <td>@item.Cart.OrderNumber</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.Total</td>
+                        <td id="cartId">@item.CartId</td>
+                        <td>
+                            <a class="btn btn-danger" href="#" onclick="deleteCartDetail(@item.Id,@item.CartId)">Ürünü Sil</a>
+                        </td>
+                    </tr>
+
+                }
+             </tbody>
+        </table>
+ *@

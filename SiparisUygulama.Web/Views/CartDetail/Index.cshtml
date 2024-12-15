@@ -1,0 +1,79 @@
+﻿@using SiparisUygulama.Web.Models.Order;
+@* @model List<CartDetailViewModel> *@
+@{
+    ViewData["Title"] = "Sepet Detay";
+    Layout = "_LayoutTemplate";
+}
+@* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
+<div class="card w-100">
+    <div class="card-body">
+        @* <h5 class="card-title">Sepet Detay</h5> *@
+        <div id="divCartDetail"></div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        var productId = $("#productId").val();
+        var cartId = $("#cartId").val();
+
+    $(document).ready(function () {
+        loadCartDetails();
+    });
+
+        function loadCartDetails() {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetCartDetails", "CartDetail")',
+                success: function (data) {
+                    $("#divCartDetail").html("");
+                    $("#divCartDetail").append(data);
+                },
+            });
+        }
+
+        function deleteCartDetail(productId, cartId) {
+            $.ajax({
+                url: 'CartDetail/Delete',
+                type: 'POST',
+                data: {
+                    'Id': productId,
+                    'CartId': cartId,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    updateCartCount()
+                    loadCartDetails()
+                }
+            });          
+        }
+
+        function loadCartDetails2() {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetCartDetails", "CartDetail")',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    var html = '';
+                    $.each(data, function (index, item) {
+                        html += '<tr>';
+                        html += '<td id="productId">' + item.id + '</td>';
+                        html += '<td>' + item.restaurantFood.restaurantName + '</td>';
+                        html += '<td>' + item.restaurantFood.foodName + '</td>';
+                        html += '<td>' + item.cart.orderNumber + '</td>';
+                        html += '<td>' + item.quantity + '</td>';
+                        html += '<td>' + item.total + '</td>';
+                        html += '<td id="cartId">' + item.cartId + '</td>';
+                        html += '<td><a class="btn btn-danger" href="#" onclick="deleteCartDetail(' + item.id + ',' + item.cartId + ')">Ürünü Sil</a></td>';
+                        html += '</tr>';
+                    });
+                    $('.table tbody').html(html);
+                },
+            });
+        }
+    </script>
+}
+
+@*  href="@Url.Action("Delete", "CartDetail", new { id = item.Id, cartId = item.CartId })" *@

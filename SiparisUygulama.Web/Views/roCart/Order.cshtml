@@ -1,0 +1,180 @@
+﻿@model List<SiparisUygulama.Contract.DataContract.Model.CartSummaryModel>
+@using SiparisUygulama.Contract.DataContract
+
+@{
+    ViewData["Title"] = "Siparişler";
+    Layout = "_Restoran";
+    var canEditStatus = (bool)ViewBag.CanEditStatus;
+}
+
+<div class="text-center">
+    <div class="card-body">
+        <table id="forDataTable" class="table">
+            <thead>
+                <tr>
+                    <th>Kullanıcı Id</th>
+                    <th>Sipariş Durumu </th>
+                    <th>Toplam Fiyat</th>
+                    <th>Sipariş Numarası</th>
+                    <th>#</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.UserId</td>
+                        <td>
+                            <select id="status-@item.CartId" onchange="changeOrderStatus(@item.CartId,this.value)">
+                                <option value="" disabled selected>@((Enums.CartStatusEnum)item.Status)</option>
+                                <option value="2">@(Enums.CartStatusEnum.Created)</option>
+                                <option value="3">@(Enums.CartStatusEnum.Preparing)</option>
+                                <option value="4">@(Enums.CartStatusEnum.SetOut)</option>
+                                <option value="5">@(Enums.CartStatusEnum.Delivered)</option>
+                            </select>
+                        </td>
+                       @*  <td id="status-@item.OrderNumber">@((Enums.CartStatusEnum)item.Status)</td> *@
+                        <td>@item.Total</td>
+                        <td>@item.OrderNumber</td>
+                        <td>
+                            @if (canEditStatus)
+                            {
+                                <a class="btn btn-primary" href="@Url.Action("OrderDetails", "roCart", new { cartId = item.CartId })">Sipariş Detayını Görüntüle</a>
+                                @*  <a class="btn btn-secondary" onclick="changeOrderStatus(@item.CartId)">Durumu Değiştir</a> *@
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        function changeOrderStatus(cartId, status) {
+
+            $.ajax({
+                url: '@Url.Action("UpdateOrderStatus", "roCart")',
+                type: 'POST',
+                data: {
+                    cartId: cartId,
+                    status: status
+                },
+                success: function (response) {
+                    alert("Durum başarıyla güncellendi!");
+                },
+                error: function (xhr, status, error) {
+                    alert("Durum güncellenirken bir hata oluştu: " + error);
+                }
+            });
+        }
+    </script>
+}
+
+
+
+
+
+
+
+
+@* @using SiparisUygulama.Contract.DataContract
+@model List<SiparisUygulama.Contract.DataContract.Model.CartSummaryModel>
+
+@{
+    ViewData["Title"] = "Siparişler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var canEditStatus = (bool)ViewBag.CanEditStatus;
+}
+<div class="text-center">
+    <div class="card-body">
+        <table id="forDataTable" class="table">
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <table class="table">
+                            <tr>
+
+                                <th colspan="4">Sepetler</th>
+                            </tr>
+                            <tr>
+                                <td>Kullanıcı Id</td>
+                                <td>Sipariş Durumu</td>
+                                <td>Toplam Fiyat</td>
+                                <td>Sipariş Numarası</td>
+                                <td>#</td>
+
+                            </tr>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.UserId</td>
+                                    <td id="status-@item.OrderNumber">@((Enums.CartStatusEnum)item.Status)</td>
+                                    <td>@item.Total</td>
+                                    <td>@item.OrderNumber</td>
+                                    <td>
+                                        @if (canEditStatus)
+                                        {
+                                            <a class="btn btn-primary" href="@Url.Action("OrderDetails", "Cart", new { id = item.UserId })">Sipariş Detayını Görüntüle</a>
+                                            <button class="btn btn-secondary" onclick="changeOrderStatus(@item.OrderNumber)">Durumu Değiştir</button>
+                                        }
+                                         <a class="btn btn-primary" href="@Url.Action("OrderDetails","Cart",new{id=item.UserId})">Sipariş Detayını Görüntüle</a>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#forDataTable').DataTable({
+                columns: [
+                    { data: 'UserId' },
+                    { data: 'Status' },
+                    { data: 'Total' },
+                    { data: 'OrderNumber' },
+                    { data: 'Actions', orderable: false, searchable: false }
+                ]
+            });
+        });
+    </script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" />
+    <script>
+        function changeOrderStatus(orderNumber) {
+            fetch('@Url.Action("UpdateOrderStatus", "Cart")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': '@Html.AntiForgeryToken()'
+                },
+                body: JSON.stringify({ orderNumber: orderNumber })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Yeni durumu güncelle
+                        var statusElement = document.getElementById('status-' + orderNumber);
+                        statusElement.textContent = data.newStatus;
+                    }
+                    else {
+                        alert('Sipariş durumu güncellenemedi.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Sipariş durumu güncellenemedi.');
+                });
+        }
+    </script>
+}
+ *@
